@@ -18,6 +18,23 @@ func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
 
+// add album
+func postAlbums(c *gin.Context) {
+	var newAlbum album
+
+	// bind received json to newalbum
+	if err := c.BindJSON(&newAlbum); err != nil {
+		return
+	}
+
+	// add album to slice
+	albums = append(albums, newAlbum)
+	c.IndentedJSON(http.StatusCreated, newAlbum)
+}
+
+//win command post test - no single quotes, escape ""
+//curl.exe  http://localhost:8080/albums --include --header "Content-Type: application/json" --request "POST" --data '{\"id\": \"6\",\"title\": \"The Modern Sound of Betty Carter\",\"artist\": \"Betty Carter\",\"price\": 49.99}'
+
 var albums = []album{
 	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
 	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
@@ -29,6 +46,7 @@ var albums = []album{
 func main() {
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
+	router.POST("/albums", postAlbums)
 
 	router.Run("localhost:8080")
 }
